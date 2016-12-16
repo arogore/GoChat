@@ -1,6 +1,6 @@
 # GoChat
 
-This is a basic chat server using go
+This is a basic chat server using Go
 
 Used as a first project to check out Go
 

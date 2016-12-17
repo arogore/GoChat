@@ -11,7 +11,7 @@ import (
 var port string = "1287"
 
 func main() {
-	host := "locahost"
+	host := "localhost"
 	fmt.Println("Connecting to " + host + " on port " + port)
 
 	conn, err := net.Dial("tcp", host+":"+port)

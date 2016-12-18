@@ -34,15 +34,16 @@ func main() {
 	}
 }
 
-func handleConnection(user ConnectedUser) {
+func handleConnection(user *ConnectedUser) {
 	for {
 		var b [512]byte
 		n, err := user.conn.Read(b[0:])
 		if err != nil {
 			fmt.Println("Error in reading message: " + err.Error() + " from " + user.uName)
+			go broadcast(user, " has disconnected.")
 			user.conn.Close()
 			for i, u := range connections {
-				if u == user {
+				if u == *user {
 					connections = append(connections[:i], connections[i+1:]...)
 					break
 				}
@@ -55,27 +56,27 @@ func handleConnection(user ConnectedUser) {
 	}
 }
 
-func broadcast(oUser ConnectedUser, msg string) {
+func broadcast(oUser *ConnectedUser, msg string) {
 	for _, user := range connections {
-		if oUser != user {
-			writeMessage(user, oUser.uName+": "+msg)
+		if *oUser != user {
+			writeMessage(&user, oUser.uName+": "+msg)
 		}
 	}
 }
 
-func addUser(conn net.Conn) ConnectedUser {
-	connUser := ConnectedUser{conn, retrieveUsername(conn)}
+func addUser(conn net.Conn) *ConnectedUser {
+	connUser := ConnectedUser{conn, *retrieveUsername(conn)}
 	connections = append(connections, connUser)
-	return connUser
+	return &connUser
 }
 
-func retrieveUsername(conn net.Conn) string {
+func retrieveUsername(conn net.Conn) *string {
 	var b [512]byte
 	n, _ := conn.Read(b[0:])
 	uname := strings.TrimSpace(string(b[0:n]))
-	return uname
+	return &uname
 }
 
-func writeMessage(user ConnectedUser, msg string) {
+func writeMessage(user *ConnectedUser, msg string) {
 	user.conn.Write([]byte(msg))
 }

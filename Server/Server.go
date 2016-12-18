@@ -15,6 +15,9 @@ type ConnectedUser struct {
 	uName string
 }
 
+/**
+ *	Starts listening for connections and sends them to a handler
+ */
 func main() {
 	fmt.Println("Listening on port 1287")
 	ln, err := net.Listen("tcp", ":1287")
@@ -34,6 +37,10 @@ func main() {
 	}
 }
 
+/**
+ *	Handles a user's connection
+ *	@param user - The user we want to handle
+ */
 func handleConnection(user *ConnectedUser) {
 	for {
 		var b [512]byte
@@ -56,6 +63,11 @@ func handleConnection(user *ConnectedUser) {
 	}
 }
 
+/**
+ *	Broadcasts a message to all users except oUser
+ * 	@param oUser - Original sender of the message
+ *	@param msg - Message we're sending
+ */
 func broadcast(oUser *ConnectedUser, msg string) {
 	for _, user := range connections {
 		if *oUser != user {
@@ -64,12 +76,22 @@ func broadcast(oUser *ConnectedUser, msg string) {
 	}
 }
 
+/**
+ *	Adds a user to the connection slice
+ *	@param conn - User's connection
+ *	@return connUser - New ConnectedUser
+ */
 func addUser(conn net.Conn) *ConnectedUser {
 	connUser := ConnectedUser{conn, *retrieveUsername(conn)}
 	connections = append(connections, connUser)
 	return &connUser
 }
 
+/**
+ *	Retrieves a username from the client
+ *	@param conn - User's connection
+ *	@return uname - User's username
+ */
 func retrieveUsername(conn net.Conn) *string {
 	var b [512]byte
 	n, _ := conn.Read(b[0:])
@@ -77,6 +99,11 @@ func retrieveUsername(conn net.Conn) *string {
 	return &uname
 }
 
+/**
+ *	Writes a message to a user
+ *	@param user - The user we want to write a message to
+ *	@param msg - The message we want to send
+ */
 func writeMessage(user *ConnectedUser, msg string) {
 	user.conn.Write([]byte(msg))
 }

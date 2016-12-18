@@ -10,6 +10,10 @@ import (
 
 var port string = "1287"
 
+/**
+ *	Connects to the host and prompts for a username
+ *	Starts waiting for messages and handles sending its' own 
+ */
 func main() {
 	host := "localhost"
 	fmt.Println("Connecting to " + host + " on port " + port)
@@ -39,6 +43,10 @@ func main() {
 	conn.Close()
 }
 
+/**
+ *	Waits for a message to be received and outputs it
+ *	@param conn - Connection we're waiting to receive from
+ */
 func waitMessages(conn net.Conn) {
 	for {
 		var buffer [512]byte
